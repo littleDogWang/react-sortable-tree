@@ -428,7 +428,18 @@ class ReactSortableTree extends Component {
         draggingTreeData: changeNodeAtPath({
           treeData: newDraggingTreeData,
           path: expandedParentPath.slice(0, -1),
-          newNode: ({ node }) => ({ ...node, expanded: true }),
+
+          newNode: ({ node }) => {
+            if (this.props.recordDragExpand) {
+              this.props.onVisibilityToggle({
+                node,
+                treeData: addedResult.treeData,
+                expanded: true,
+                path: expandedParentPath.slice(0, -1),
+              })
+            }
+            return { ...node, expanded: true }
+          },
           getNodeKey: this.props.getNodeKey,
         }),
         // reset the scroll focus so it doesn't jump back
@@ -924,6 +935,8 @@ export type ReactSortableTreeProps = {
   debugMode?: boolean
 
   overscan?: number | { main: number; reverse: number }
+
+  recordDragExpand?: boolean
 }
 
 ReactSortableTree.defaultProps = {
@@ -955,6 +968,7 @@ ReactSortableTree.defaultProps = {
   rowDirection: 'ltr',
   debugMode: false,
   overscan: 0,
+  recordDragExpand: false,
 }
 
 const SortableTreeWithoutDndContext = function (props: ReactSortableTreeProps) {
